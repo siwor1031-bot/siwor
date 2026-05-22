@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>요가원 경영 인사이트 대시보드</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Pretendard', -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 24px; }
+.dashboard { max-width: 1400px; margin: 0 auto; }
+h1 { font-size: 1.5rem; margin-bottom: 8px; color: #f8fafc; }
+.subtitle { color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+.card-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.card-value { font-size: 1.6rem; font-weight: 700; }
+.positive { color: #4ade80; }
+.negative { color: #f87171; }
+.neutral { color: #60a5fa; }
+.warn { color: #fbbf24; }
+.section { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; margin-bottom: 16px; }
+.section h2 { font-size: 1rem; margin-bottom: 16px; color: #f1f5f9; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #334155; }
+th { color: #94a3b8; font-weight: 500; }
+.input-group { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.input-group label { font-size: 0.8rem; color: #94a3b8; min-width: 120px; }
+.input-group input, .input-group select { background: #0f172a; border: 1px solid #475569; border-radius: 6px; padding: 6px 10px; color: #e2e8f0; font-size: 0.85rem; width: 100px; }
+.bar-chart { display: flex; align-items: end; gap: 4px; height: 120px; margin-top: 12px; }
+.bar { background: #3b82f6; border-radius: 4px 4px 0 0; min-width: 30px; flex: 1; position: relative; transition: height 0.3s; }
+.bar.profit { background: #4ade80; }
+.bar.loss { background: #f87171; }
+.bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.65rem; color: #94a3b8; white-space: nowrap; }
+.bar-value { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 0.65rem; color: #e2e8f0; white-space: nowrap; }
+.highlight-box { background: #1e3a5f; border: 1px solid #3b82f6; border-radius: 8px; padding: 16px; margin-top: 12px; }
+.highlight-box p { font-size: 0.85rem; line-height: 1.6; }
+.bep-indicator { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 600; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+.tag-red { background: #7f1d1d; color: #fca5a5; }
+.tag-green { background: #14532d; color: #86efac; }
+.tag-yellow { background: #713f12; color: #fde047; }
+.timeline { position: relative; padding-left: 20px; border-left: 2px solid #334155; }
+.timeline-item { margin-bottom: 16px; position: relative; }
+.timeline-item::before { content: ''; position: absolute; left: -25px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; }
+.timeline-item.done::before { background: #4ade80; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+<h1>🧘 요가원 인수 경영 인사이트</h1>
+<p class="subtitle">손익분기점 시뮬레이션 & 경영 분석 대시보드 | 2026.05 기준</p>
+
+<!-- 핵심 지표 카드 -->
+<div class="grid" id="kpiCards"></div>
+
+<!-- 시뮬레이션 컨트롤 -->
+<div class="section">
+<h2>⚙️ 시뮬레이션 변수 조정</h2>
+<div class="row">
+<div>
+<div class="input-group"><label>기존 회원수</label><input type="number" id="existMembers" value="37"></div>
+<div class="input-group"><label>신규 회원 (월)</label><input type="number" id="newMembers" value="0"></div>
+<div class="input-group"><label>주2회 가격 (만원)</label><input type="number" id="price2x" value="40"></div>
+<div class="input-group"><label>주3회 가격 (만원)</label><input type="number" id="price3x" value="55"></div>
+<div class="input-group"><label>주2회 비율 (%)</label><input type="number" id="ratio2x" value="60"></div>
+</div>
+<div>
+<div class="input-group"><label>강사 타임당 (만원)</label><input type="number" id="instructorFee" value="3.5" step="0.5"></div>
+<div class="input-group"><label>강사 인센 (%)</label><input type="number" id="incentiveRate" value="10"></div>
+<div class="input-group"><label>월세 (만원)</label><input type="number" id="rent" value="165"></div>
+<div class="input-group"><label>관리비 (만원)</label><input type="number" id="mgmt" value="20"></div>
+<div class="input-group"><label>기타비용 (만원)</label><input type="number" id="etc" value="30"></div>
+</div>
+</div>
+</div>
+
+<!-- 손익 구조 -->
+<div class="row">
+<div class="section">
+<h2>📊 월간 손익 구조</h2>
+<table id="plTable">
+<thead><tr><th>항목</th><th>금액</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="section">
+<h2>📈 회원수별 월 손익 추이</h2>
+<div class="bar-chart" id="barChart"></div>
+</div>
+</div>
+
+<!-- BEP 분석 -->
+<div class="section">
+<h2>🎯 손익분기점 (BEP) 분석</h2>
+<div id="bepAnalysis"></div>
+</div>
+
+<!-- 투자 회수 -->
+<div class="section">
+<h2>💰 초기 투자 회수 타임라인</h2>
+<div id="roiTimeline"></div>
+</div>
+
+<!-- 인사이트 -->
+<div class="section">
+<h2>💡 경영 인사이트</h2>
+<div id="insights"></div>
+</div>
+</div>
+
+<script>
+function calc() {
+  const v = (id) => parseFloat(document.getElementById(id).value) || 0;
+  const existMembers = v('existMembers');
+  const newMembers = v('newMembers');
+  const totalMembers = existMembers + newMembers;
+  const price2x = v('price2x');
+  const price3x = v('price3x');
+  const ratio2x = v('ratio2x') / 100;
+  const instructorFee = v('instructorFee');
+  const incentiveRate = v('incentiveRate') / 100;
+  const rent = v('rent');
+  const mgmt = v('mgmt');
+  const etc = v('etc');
+
+  // 매출: 회원수 × 평균 단가
+  const avgPrice = price2x * ratio2x + price3x * (1 - ratio2x);
+  const revenue = totalMembers * avgPrice;
+
+  // 강사비: 월~목 오전1+오후2 = 3타임/일 × 4일 = 12타임/주, 금 오전1+오후2(강사) = 2타임 → 주 14타임
+  // 금요일: 본인 수업이므로 강사는 오전1+오후1? 문맥상 금요일 본인수업 = 일부 타임
+  // 재해석: 월~금 오전1 오후2 = 3타임/일 × 5일 = 15타임/주, 금요일 본인수업 → 강사 14타임/주
+  // 토요일 2타임 본인 → 강사 0
+  const instructorTimesPerWeek = 14;
+  const instructorCostBase = instructorTimesPerWeek * 4.3 * instructorFee; // 월 환산
+  const incentiveCost = revenue * incentiveRate;
+  const totalInstructorCost = instructorCostBase + incentiveCost;
+
+  const fixedCost = rent + mgmt + etc;
+  const totalCost = fixedCost + totalInstructorCost;
+  const profit = revenue - totalCost;
+
+  // 권리금 회수
+  const initialInvestment = 1000; // 권리금만 (보증금은 회수 가능)
+  const monthsToRecover = profit > 0 ? Math.ceil(initialInvestment / profit) : Infinity;
+
+  // BEP 회원수 계산
+  // revenue = members * avgPrice
+  // cost = fixedCost + instructorCostBase + revenue * incentiveRate
+  // BEP: members * avgPrice = fixedCost + instructorCostBase + members * avgPrice * incentiveRate
+  // members * avgPrice * (1 - incentiveRate) = fixedCost + instructorCostBase
+  const bepMembers = Math.ceil((fixedCost + instructorCostBase) / (avgPrice * (1 - incentiveRate)));
+  const additionalNeeded = Math.max(0, bepMembers - existMembers);
+
+  // KPI Cards
+  document.getElementById('kpiCards').innerHTML = `
+    <div class="card"><div class="card-label">총 회원수</div><div class="card-value neutral">${totalMembers}명</div></div>
+    <div class="card"><div class="card-label">월 매출</div><div class="card-value neutral">${revenue.toFixed(0)}만원</div></div>
+    <div class="card"><div class="card-label">월 비용</div><div class="card-value warn">${totalCost.toFixed(0)}만원</div></div>
+    <div class="card"><div class="card-label">월 순이익</div><div class="card-value ${profit >= 0 ? 'positive' : 'negative'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만원</div></div>
+    <div class="card"><div class="card-label">BEP 회원수</div><div class="card-value warn">${bepMembers}명</div></div>
+    <div class="card"><div class="card-label">추가 필요</div><div class="card-value ${additionalNeeded > 0 ? 'negative' : 'positive'}">${additionalNeeded > 0 ? '+' + additionalNeeded + '명' : '달성!'}</div></div>
+  `;
+
+  // P&L Table
+  document.querySelector('#plTable tbody').innerHTML = `
+    <tr><td>매출 (${totalMembers}명 × ${avgPrice.toFixed(0)}만)</td><td class="positive">+${revenue.toFixed(0)}만</td></tr>
+    <tr><td>─ 월세</td><td class="negative">-${rent}만</td></tr>
+    <tr><td>─ 관리비</td><td class="negative">-${mgmt}만</td></tr>
+    <tr><td>─ 강사비 (기본 ${instructorTimesPerWeek}타임/주)</td><td class="negative">-${instructorCostBase.toFixed(0)}만</td></tr>
+    <tr><td>─ 강사 인센티브 (${(incentiveRate*100).toFixed(0)}%)</td><td class="negative">-${incentiveCost.toFixed(0)}만</td></tr>
+    <tr><td>─ 기타 (소모품/마케팅 등)</td><td class="negative">-${etc}만</td></tr>
+    <tr style="border-top:2px solid #475569;font-weight:700"><td>순이익</td><td class="${profit >= 0 ? 'positive' : 'negative'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만</td></tr>
+  `;
+
+  // Bar Chart - 회원수별 손익
+  let bars = '';
+  const steps = [20, 30, 37, 40, 50, 60, 70, 80];
+  const maxAbs = Math.max(...steps.map(m => Math.abs(m * avgPrice * (1 - incentiveRate) - fixedCost - instructorCostBase)));
+  steps.forEach(m => {
+    const p = m * avgPrice * (1 - incentiveRate) - fixedCost - instructorCostBase;
+    const h = Math.max(5, Math.abs(p) / maxAbs * 100);
+    const cls = p >= 0 ? 'profit' : 'loss';
+    bars += `<div class="bar ${cls}" style="height:${h}px"><span class="bar-value">${p >= 0 ? '+' : ''}${p.toFixed(0)}</span><span class="bar-label">${m}명</span></div>`;
+  });
+  document.getElementById('barChart').innerHTML = bars;
+
+  // BEP Analysis
+  document.getElementById('bepAnalysis').innerHTML = `
+    <div class="bep-indicator"><span class="dot" style="background:${additionalNeeded > 0 ? '#fbbf24' : '#4ade80'}"></span>
+      손익분기점: <strong>${bepMembers}명</strong> | 현재: ${existMembers}명 → 
+      <span class="${additionalNeeded > 0 ? 'tag tag-yellow' : 'tag tag-green'}">${additionalNeeded > 0 ? additionalNeeded + '명 추가 필요' : 'BEP 달성!'}</span>
+    </div>
+    <div class="highlight-box" style="margin-top:12px">
+      <p>• 평균 회원 단가: <strong>${avgPrice.toFixed(0)}만원/월</strong> (주2회 ${price2x}만 ${(ratio2x*100).toFixed(0)}% + 주3회 ${price3x}만 ${((1-ratio2x)*100).toFixed(0)}%)</p>
+      <p>• 고정비: <strong>${(fixedCost + instructorCostBase).toFixed(0)}만원/월</strong> (월세+관리비+강사기본+기타)</p>
+      <p>• 회원 1명당 공헌이익: <strong>${(avgPrice * (1 - incentiveRate)).toFixed(1)}만원</strong> (인센 차감 후)</p>
+      <p>• BEP 도달 시 월 순이익: <strong>0원</strong> → 이후 회원 1명 추가 시 +${(avgPrice * (1 - incentiveRate)).toFixed(1)}만원</p>
+    </div>
+  `;
+
+  // ROI Timeline
+  const months = [];
+  let cumProfit = 0;
+  for (let i = 1; i <= 12; i++) {
+    const mMembers = Math.min(existMembers + newMembers * i, 100);
+    const mRev = mMembers * avgPrice;
+    const mCost = fixedCost + instructorCostBase + mRev * incentiveRate;
+    const mProfit = mRev - mCost;
+    cumProfit += mProfit;
+    months.push({ month: i, members: mMembers, profit: mProfit, cum: cumProfit });
+  }
+  let timeline = '<div class="timeline">';
+  months.slice(0, 6).forEach(m => {
+    const recovered = m.cum >= initialInvestment;
+    timeline += `<div class="timeline-item ${recovered ? 'done' : ''}">
+      <strong>${m.month}개월차</strong> - 회원 ${m.members.toFixed(0)}명 | 월 순익 ${m.profit >= 0 ? '+' : ''}${m.profit.toFixed(0)}만 | 누적 ${m.cum >= 0 ? '+' : ''}${m.cum.toFixed(0)}만
+      ${recovered ? '<span class="tag tag-green">권리금 회수!</span>' : ''}
+    </div>`;
+  });
+  timeline += '</div>';
+  if (newMembers === 0) {
+    timeline += `<p style="margin-top:12px;color:#94a3b8;font-size:0.8rem">※ 신규 회원수를 입력하면 월별 성장 시뮬레이션이 반영됩니다</p>`;
+  }
+  document.getElementById('roiTimeline').innerHTML = timeline;
+
+  // Insights
+  const insights = [];
+  if (additionalNeeded > 0) {
+    insights.push(`⚠️ 현재 37명으로는 월 <strong>${Math.abs(profit).toFixed(0)}만원 적자</strong>. ${additionalNeeded}명 추가 모집이 급선무입니다.`);
+  }
+  if (instructorCostBase > revenue * 0.3) {
+    insights.push(`💸 강사비(기본)가 매출의 ${(instructorCostBase/revenue*100).toFixed(0)}%를 차지합니다. 본인 수업 비중을 늘리면 수익성이 크게 개선됩니다.`);
+  }
+  insights.push(`📌 본인 수업 확대 시 (금+토 → 주 5타임 추가 직접 운영) 강사비 약 ${(5 * 4.3 * instructorFee).toFixed(0)}만원 절감 가능`);
+  insights.push(`🎯 회원 유지율이 핵심. 기존 37명 이탈 방지 + 월 ${Math.ceil(additionalNeeded / 3)}명씩 신규 모집 시 3개월 내 BEP 도달`);
+  insights.push(`💡 주3회 비율을 높이면 BEP가 낮아짐. 현재 주3회 40% → 60%로 올리면 BEP ${Math.ceil((fixedCost + instructorCostBase) / ((price2x * 0.4 + price3x * 0.6) * (1 - incentiveRate)))}명`);
+
+  document.getElementById('insights').innerHTML = insights.map(i => `<div class="highlight-box" style="margin-bottom:8px"><p>${i}</p></div>`).join('');
+}
+
+// 이벤트 바인딩
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+calc();
+</script>
+</body>
+</html>
