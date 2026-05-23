@@ -195,11 +195,12 @@ async function submit() {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...savedData, image })
+      body: JSON.stringify({ ...savedData, image }),
+      redirect: 'follow'
     });
-  } catch(e) { /* no-cors 모드에서는 에러 무시 */ }
+  } catch(e) {
+    // CORS redirect 시에도 데이터는 전송됨
+  }
 
   document.getElementById('loadingView').style.display = 'none';
   document.getElementById('successView').style.display = 'block';
