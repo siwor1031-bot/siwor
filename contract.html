@@ -30,7 +30,8 @@ canvas { width: 100%; height: 100%; border-radius: 6px; }
 .success { display: none; text-align: center; padding: 40px 20px; }
 .success h2 { color: #03c75a; margin-bottom: 12px; }
 .success p { color: #666; font-size: 0.85rem; line-height: 1.6; }
-.btn-kakao { background: #fee500; color: #3c1e1e; border: none; border-radius: 8px; padding: 12px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 16px; }
+.btn-save { background: #222; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 16px; }
+.btn-kakao { background: #fee500; color: #3c1e1e; border: none; border-radius: 8px; padding: 12px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
 .btn-new { background: #868e96; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; cursor: pointer; margin-top: 8px; }
 .loading { display: none; text-align: center; padding: 40px; }
 .loading p { color: #555; font-size: 0.9rem; }
@@ -40,76 +41,68 @@ canvas { width: 100%; height: 100%; border-radius: 6px; }
 </head>
 <body>
 <div class="contract" id="contractForm">
-  <h1>🧘 수강 계약서</h1>
-  
-  <div class="row">
-    <div class="form-group"><label>회원명</label><input type="text" id="name" placeholder="홍길동"></div>
-    <div class="form-group"><label>연락처</label><input type="tel" id="phone" placeholder="010-0000-0000"></div>
-  </div>
-  
-  <div class="row">
-    <div class="form-group">
-      <label>수강권</label>
-      <select id="plan">
-        <option value="주2회">주2회</option>
-        <option value="주3회">주3회</option>
-      </select>
-    </div>
-    <div class="form-group"><label>금액 (만원)</label><input type="number" id="amount" placeholder="40"></div>
-  </div>
-
-  <div class="row">
-    <div class="form-group"><label>시작일</label><input type="date" id="startDate"></div>
-    <div class="form-group"><label>총 횟수</label><input type="number" id="totalCount" placeholder="24"></div>
-  </div>
-
-  <div class="terms">
-    <h3>📋 이용 약관 및 환불 규정</h3>
-    1. 수강 시작 후 환불 시 잔여횟수 기준으로 환불합니다.<br>
-    2. 환불 수수료: 결제금액의 10% (소비자보호법 기준)<br>
-    3. 수강권 양도는 1회에 한해 가능하며, 양도 수수료 3만원이 발생합니다.<br>
-    4. 수업 예약 취소는 수업 시작 2시간 전까지 가능합니다.<br>
-    5. 노쇼(No-show) 시 1회 차감됩니다.<br>
-    6. 수강 기간 내 휴회는 1회(최대 30일) 가능합니다.<br>
-    7. 개인 사정에 의한 수업 변경은 주 1회까지 가능합니다.<br>
-    8. 귀중품 분실에 대해 센터는 책임지지 않습니다.
-  </div>
-
-  <div class="check-group">
-    <input type="checkbox" id="agree">
-    <label for="agree">위 약관을 모두 읽었으며 동의합니다.</label>
-  </div>
-
-  <div class="sign-area">
-    <label>서명</label>
-    <div class="sign-pad" id="signPad">
-      <canvas id="canvas"></canvas>
-    </div>
-    <button class="btn-clear" onclick="clearSign()">다시 쓰기</button>
-  </div>
-
-  <button class="btn-submit" id="submitBtn" onclick="submit()" disabled>계약 완료</button>
+<h1>🧘 수강 계약서</h1>
+<div class="row">
+<div class="form-group"><label>회원명</label><input type="text" id="name" placeholder="홍길동"></div>
+<div class="form-group"><label>연락처</label><input type="tel" id="phone" placeholder="010-0000-0000"></div>
 </div>
-
+<div class="row">
+<div class="form-group">
+<label>수강권</label>
+<select id="plan">
+<option value="주2회">주2회</option>
+<option value="주3회">주3회</option>
+</select>
+</div>
+<div class="form-group"><label>금액 (만원)</label><input type="number" id="amount" placeholder="40"></div>
+</div>
+<div class="row">
+<div class="form-group"><label>시작일</label><input type="date" id="startDate"></div>
+<div class="form-group"><label>총 횟수</label><input type="number" id="totalCount" placeholder="24"></div>
+</div>
+<div class="terms">
+<h3>📋 이용 약관 및 환불 규정</h3>
+1. 수강 시작 후 환불 시 잔여횟수 기준으로 환불합니다.<br>
+2. 환불 수수료: 결제금액의 10% (소비자보호법 기준)<br>
+3. 수강권 양도는 1회에 한해 가능하며, 양도 수수료 3만원이 발생합니다.<br>
+4. 수업 예약 취소는 수업 시작 2시간 전까지 가능합니다.<br>
+5. 노쇼(No-show) 시 1회 차감됩니다.<br>
+6. 수강 기간 내 휴회는 1회(최대 30일) 가능합니다.<br>
+7. 개인 사정에 의한 수업 변경은 주 1회까지 가능합니다.<br>
+8. 귀중품 분실에 대해 센터는 책임지지 않습니다.
+</div>
+<div class="check-group">
+<input type="checkbox" id="agree">
+<label for="agree">위 약관을 모두 읽었으며 동의합니다.</label>
+</div>
+<div class="sign-area">
+<label>서명</label>
+<div class="sign-pad" id="signPad">
+<canvas id="canvas"></canvas>
+</div>
+<button class="btn-clear" onclick="clearSign()">다시 쓰기</button>
+</div>
+<button class="btn-submit" id="submitBtn" onclick="submit()" disabled>계약 완료</button>
+</div>
 <div class="loading" id="loadingView">
-  <div class="spinner"></div>
-  <p>저장 중...</p>
+<div class="spinner"></div>
+<p>저장 중...</p>
 </div>
-
 <div class="success" id="successView">
-  <h2>✅ 계약 완료!</h2>
-  <p id="summaryText"></p>
-  <button class="btn-kakao" onclick="shareKakao()">💬 카톡으로 회원에게 전송</button><br>
-  <button class="btn-new" onclick="reset()">새 계약서 작성</button>
+<h2>✅ 계약 완료!</h2>
+<p id="summaryText"></p>
+<button class="btn-save" onclick="saveImage()">📷 계약서 사진 저장</button><br>
+<button class="btn-kakao" onclick="shareKakao()">💬 카톡으로 회원에게 전송</button><br>
+<button class="btn-new" onclick="reset()">새 계약서 작성</button>
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCcFX6z3a9EobybFVzu0772z1GHIYIRiJTHa0fTruqYo4ZeWxBWYCaabN7e6XaXMCt/exec';
-
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPR5-o6P1mTRFoZwm2s4wjVc3co7CXOkswLPl3iNd2U5I7UM3krmR5G7M7qawPR2SX/exec';
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 let drawing = false, hasSigned = false;
 let savedData = {};
+let contractImage = '';
 
 function initCanvas() {
   const pad = document.getElementById('signPad');
@@ -151,29 +144,65 @@ document.getElementById('agree').addEventListener('change', checkReady);
 
 function generateImage() {
   const c = document.createElement('canvas');
-  c.width = 600; c.height = 500;
+  c.width = 700; c.height = 520;
   const x = c.getContext('2d');
-  x.fillStyle = '#fff'; x.fillRect(0, 0, 600, 500);
-  x.fillStyle = '#03c75a'; x.fillRect(0, 0, 600, 4);
-  x.fillStyle = '#222'; x.font = 'bold 18px sans-serif';
-  x.fillText('수강 계약서', 240, 35);
-  x.font = '13px sans-serif';
-  const info = [
-    `회원명: ${savedData.name}`,
-    `연락처: ${savedData.phone}`,
-    `수강권: ${savedData.plan}`,
-    `금액: ${savedData.amount}만원`,
-    `횟수: ${savedData.count}회`,
-    `시작일: ${savedData.startDate}`,
-    `계약일: ${savedData.contractDate}`,
-  ];
-  info.forEach((t, i) => x.fillText(t, 30, 70 + i * 26));
-  x.fillText('─────────────────────────────────', 30, 265);
-  x.fillText('서명:', 30, 290);
-  x.drawImage(canvas, 30, 300, 250, 80);
-  x.font = '10px sans-serif'; x.fillStyle = '#999';
-  x.fillText('본 계약서는 전자서명으로 체결되었습니다.', 30, 470);
+
+  x.fillStyle = '#fff';
+  x.fillRect(0, 0, 700, 520);
+
+  x.fillStyle = '#222';
+  x.fillRect(40, 30, 620, 2);
+
+  x.font = '600 22px sans-serif';
+  x.fillStyle = '#222';
+  x.fillText('수강 계약서', 40, 68);
+
+  x.font = '12px sans-serif';
+  x.fillStyle = '#999';
+  x.textAlign = 'right';
+  x.fillText(savedData.contractDate, 660, 68);
+  x.textAlign = 'left';
+
+  x.fillStyle = '#eee';
+  x.fillRect(40, 82, 620, 1);
+
+  x.font = '14px sans-serif';
+  const labels = ['회원명', '연락처', '수강권', '금액', '횟수', '시작일'];
+  const values = [savedData.name, savedData.phone, savedData.plan, savedData.amount + '만원', savedData.count + '회', savedData.startDate || '미정'];
+
+  labels.forEach((label, i) => {
+    const y = 115 + i * 34;
+    x.fillStyle = '#999';
+    x.font = '12px sans-serif';
+    x.fillText(label, 50, y);
+    x.fillStyle = '#222';
+    x.font = '14px sans-serif';
+    x.fillText(values[i], 130, y);
+  });
+
+  x.fillStyle = '#eee';
+  x.fillRect(40, 330, 620, 1);
+  x.fillStyle = '#999';
+  x.font = '12px sans-serif';
+  x.fillText('서명', 50, 358);
+
+  x.drawImage(canvas, 50, 365, 220, 70);
+
+  x.fillStyle = '#222';
+  x.fillRect(40, 470, 620, 1);
+
+  x.fillStyle = '#bbb';
+  x.font = '11px sans-serif';
+  x.fillText('본 계약서는 전자서명으로 체결되었습니다.', 40, 495);
+
   return c.toDataURL('image/png');
+}
+
+function saveImage() {
+  const link = document.createElement('a');
+  link.download = '계약서_' + savedData.name + '_' + savedData.startDate + '.png';
+  link.href = contractImage;
+  link.click();
 }
 
 async function submit() {
@@ -184,53 +213,49 @@ async function submit() {
   const startDate = document.getElementById('startDate').value;
   const count = document.getElementById('totalCount').value;
   const contractDate = new Date().toLocaleString('ko-KR');
-
   savedData = { name, phone, plan, amount, count, startDate, contractDate };
 
   document.getElementById('contractForm').style.display = 'none';
   document.getElementById('loadingView').style.display = 'block';
 
-  const image = generateImage();
+  contractImage = generateImage();
 
   try {
-    const params = new URLSearchParams(savedData).toString();
-    const img = new Image();
-    img.src = SCRIPT_URL + '?' + params;
-    await new Promise(r => setTimeout(r, 2000));
-  } catch(e) {}
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...savedData,
+        image: contractImage
+      })
+    });
+  } catch(e) {
+    console.log('저장 오류:', e);
+  }
 
   document.getElementById('loadingView').style.display = 'none';
   document.getElementById('successView').style.display = 'block';
-  document.getElementById('summaryText').innerHTML = `
-    <strong>${name}</strong>님 (${phone})<br>
-    ${plan} | ${amount}만원 | ${count}회<br>
-    시작일: ${startDate || '미정'}<br>
-    계약일시: ${contractDate}<br><br>
-    ✅ 구글시트 저장 완료<br>
-    ✅ 구글드라이브 이미지 저장 완료
-  `;
+  document.getElementById('summaryText').innerHTML =
+    '<strong>' + name + '</strong>님 (' + phone + ')<br>' +
+    plan + ' | ' + amount + '만원 | ' + count + '회<br>' +
+    '시작일: ' + (startDate || '미정') + '<br>' +
+    '계약일시: ' + contractDate;
 }
 
 function shareKakao() {
-  const text = `[수강 계약 완료]\n회원: ${savedData.name}\n수강권: ${savedData.plan} (${savedData.amount}만원)\n횟수: ${savedData.count}회\n시작일: ${savedData.startDate}\n\n감사합니다 🧘`;
-  const url = `https://sharer.kakao.com/talk/friends/picker/shortcut?app_key=javascript&text=${encodeURIComponent(text)}`;
-  
-  // 카카오 링크 대신 기본 공유 사용
+  const text = '[수강 계약 완료]\n회원: ' + savedData.name + '\n수강권: ' + savedData.plan + ' (' + savedData.amount + '만원)\n횟수: ' + savedData.count + '회\n시작일: ' + savedData.startDate + '\n\n감사합니다 🧘';
   if (navigator.share) {
     navigator.share({ title: '수강 계약서', text: text });
   } else {
-    // 모바일: 카톡 URL scheme
-    const kakaoUrl = `kakaotalk://msg/text/${encodeURIComponent(text)}`;
-    window.open(kakaoUrl);
-    // 안 되면 클립보드 복사
-    navigator.clipboard.writeText(text).then(() => alert('계약 내용이 복사되었습니다.\n카톡에 붙여넣기 해주세요!'));
+    navigator.clipboard.writeText(text).then(function() { alert('계약 내용이 복사되었습니다.\n카톡에 붙여넣기 해주세요!'); });
   }
 }
 
 function reset() {
   document.getElementById('contractForm').style.display = 'block';
   document.getElementById('successView').style.display = 'none';
-  document.querySelectorAll('input[type=text], input[type=tel], input[type=number], input[type=date]').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=text], input[type=tel], input[type=number], input[type=date]').forEach(function(el) { el.value = ''; });
   document.getElementById('agree').checked = false;
   document.getElementById('startDate').value = new Date().toISOString().slice(0, 10);
   clearSign();
