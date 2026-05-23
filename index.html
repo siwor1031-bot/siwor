@@ -6,205 +6,119 @@
 <title>요가원 경영 대시보드</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, 'Pretendard', sans-serif; background: #f8f9fa; color: #1a1a2e; min-height: 100vh; }
-.header { background: #fff; border-bottom: 1px solid #e9ecef; padding: 20px 32px; }
-.header h1 { font-size: 1.25rem; font-weight: 700; color: #1a1a2e; }
-.header p { font-size: 0.8rem; color: #868e96; margin-top: 2px; }
-.container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.kpi { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e9ecef; }
-.kpi-label { font-size: 0.7rem; color: #868e96; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.kpi-value { font-size: 1.8rem; font-weight: 700; }
-.kpi-sub { font-size: 0.72rem; color: #868e96; margin-top: 4px; }
-.red { color: #e03131; }
-.green { color: #2f9e44; }
-.blue { color: #1971c2; }
-.orange { color: #e8590c; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.card { background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e9ecef; }
-.card h2 { font-size: 0.85rem; font-weight: 600; color: #495057; margin-bottom: 16px; }
-.controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.ctrl { display: flex; flex-direction: column; gap: 4px; }
-.ctrl label { font-size: 0.7rem; color: #868e96; }
-.ctrl input { border: 1px solid #dee2e6; border-radius: 6px; padding: 8px 10px; font-size: 0.85rem; background: #f8f9fa; width: 100%; }
-.ctrl input:focus { outline: none; border-color: #1971c2; background: #fff; }
-table { width: 100%; font-size: 0.82rem; }
-th, td { padding: 10px 0; text-align: left; border-bottom: 1px solid #f1f3f5; }
-th { color: #868e96; font-weight: 500; }
-td:last-child { text-align: right; font-weight: 600; }
-.bar-wrap { display: flex; align-items: end; gap: 6px; height: 140px; padding-top: 20px; }
-.bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.3s; min-height: 2px; }
-.bar-fill.pos { background: #2f9e44; }
-.bar-fill.neg { background: #e03131; }
-.bar-num { font-size: 0.65rem; font-weight: 600; }
-.bar-lbl { font-size: 0.6rem; color: #868e96; }
-.insight { background: #f1f3f5; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 0.8rem; line-height: 1.5; }
-.insight strong { color: #1a1a2e; }
-.alert-box { background: #fff5f5; border: 1px solid #ffc9c9; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; font-size: 0.8rem; color: #c92a2a; }
-.timeline { display: flex; gap: 0; margin-top: 8px; }
-.tl-item { flex: 1; text-align: center; padding: 10px 4px; border-top: 3px solid #dee2e6; position: relative; }
-.tl-item.loss { border-top-color: #e03131; }
-.tl-item.profit { border-top-color: #2f9e44; }
-.tl-item .tl-month { font-size: 0.65rem; color: #868e96; }
-.tl-item .tl-val { font-size: 0.72rem; font-weight: 600; margin-top: 2px; }
-.tl-item .tl-tag { font-size: 0.6rem; margin-top: 2px; }
-@media (max-width: 768px) {
-  .kpi-row { grid-template-columns: repeat(2, 1fr); }
-  .grid2 { grid-template-columns: 1fr; }
+body { font-family: -apple-system, 'Noto Sans KR', sans-serif; background: #f5f6f8; color: #222; }
+.nav { background: #03c75a; padding: 14px 24px; }
+.nav h1 { color: #fff; font-size: 1.1rem; font-weight: 700; }
+.container { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
+
+.alert { background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.6; }
+.alert strong { color: #856404; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.kpi { background: #fff; border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.kpi .label { font-size: 0.72rem; color: #888; margin-bottom: 6px; }
+.kpi .value { font-size: 1.6rem; font-weight: 800; }
+.kpi .sub { font-size: 0.7rem; color: #999; margin-top: 4px; }
+.red { color: #e74c3c; }
+.green { color: #03c75a; }
+.blue { color: #1a73e8; }
+
+.card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card h2 { font-size: 0.9rem; font-weight: 700; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+
+.controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 6px; }
+.ctrl label { display: block; font-size: 0.7rem; color: #888; margin-bottom: 4px; }
+.ctrl input { width: 100%; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; font-size: 0.9rem; }
+.ctrl input:focus { outline: none; border-color: #03c75a; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; font-size: 0.82rem; border-collapse: collapse; }
+th { background: #f8f9fa; padding: 10px 12px; text-align: center; font-weight: 600; color: #555; border-bottom: 2px solid #e9ecef; }
+td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+tr:hover { background: #f8fdf9; }
+.highlight-row { background: #e8f8ee !important; font-weight: 700; }
+
+.insight { background: #f0faf4; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 0.82rem; line-height: 1.6; border-left: 3px solid #03c75a; }
+
+@media (max-width: 600px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
   .controls { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>🧘 요가원 인수 경영 대시보드</h1>
-  <p>손익분기점 시뮬레이션 | 기존회원 = 비용(잔여횟수 소화 의무), 매출 = 신규회원만</p>
-</div>
+<div class="nav"><h1>🧘 요가원 인수 경영 대시보드</h1></div>
 <div class="container">
 
-<!-- 경고 -->
-<div class="alert-box" id="alertBox"></div>
+<div class="alert">
+  <strong>⚠️ 기존 37명 = 비용</strong><br>
+  잔여횟수 소화 의무만 있고 매출 없음. 수익은 <strong>신규 회원</strong>에서만 발생합니다.<br>
+  인수 전 반드시 회원별 잔여횟수를 확인하세요.
+</div>
 
-<!-- KPI -->
-<div class="kpi-row" id="kpis"></div>
+<div class="kpi-grid" id="kpis"></div>
 
-<!-- 변수 조정 -->
-<div class="card" style="margin-bottom:16px">
-  <h2>시뮬레이션 변수</h2>
+<div class="card">
+  <h2>⚙️ 조건 설정</h2>
   <div class="controls">
-    <div class="ctrl"><label>월 신규 회원</label><input type="number" id="newPerMonth" value="5"></div>
-    <div class="ctrl"><label>회원가 (만원/월)</label><input type="number" id="memberPrice" value="46"></div>
-    <div class="ctrl"><label>기존회원 잔여 (개월)</label><input type="number" id="burnMonths" value="2"></div>
-    <div class="ctrl"><label>기존→재등록율 (%)</label><input type="number" id="retention" value="50"></div>
+    <div class="ctrl"><label>회원가 (만원/월)</label><input type="number" id="price" value="46"></div>
     <div class="ctrl"><label>강사 타임당 (만원)</label><input type="number" id="instrFee" value="3.5" step="0.5"></div>
     <div class="ctrl"><label>기타비용 (만원)</label><input type="number" id="etcCost" value="30"></div>
   </div>
 </div>
 
-<!-- 손익 + 차트 -->
-<div class="grid2">
-  <div class="card">
-    <h2>월간 손익 (정상화 후)</h2>
-    <table id="plTable"></table>
-  </div>
-  <div class="card">
-    <h2>신규 회원수별 월 손익</h2>
-    <div class="bar-wrap" id="barChart"></div>
-  </div>
-</div>
-
-<!-- 타임라인 -->
-<div class="card" style="margin-bottom:16px">
-  <h2>12개월 캐시플로우</h2>
-  <div class="timeline" id="timeline"></div>
-</div>
-
-<!-- 인사이트 -->
 <div class="card">
-  <h2>핵심 인사이트</h2>
+  <h2>📊 신규회원 늘어날 때마다 월 순수익</h2>
+  <p style="font-size:0.75rem;color:#888;margin-bottom:12px">신규 유료회원이 1명씩 늘 때 월 수익이 어떻게 변하는지</p>
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead><tr><th>유료회원</th><th>월매출</th><th>월비용</th><th>월순익</th><th>상태</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>💡 핵심 인사이트</h2>
   <div id="insights"></div>
 </div>
 
 </div>
 <script>
 function calc() {
-  const v = id => parseFloat(document.getElementById(id).value) || 0;
-  const newPerMonth = v('newPerMonth');
-  const price = v('memberPrice');
-  const burnMonths = v('burnMonths');
-  const retention = v('retention') / 100;
-  const instrFee = v('instrFee');
-  const etcCost = v('etcCost');
+  const price = parseFloat(document.getElementById('price').value) || 46;
+  const instrFee = parseFloat(document.getElementById('instrFee').value) || 3.5;
+  const etcCost = parseFloat(document.getElementById('etcCost').value) || 30;
 
-  // 고정값
-  const existMembers = 37;
-  const rent = 165;
-  const mgmt = 20;
-  const instrTimesPerWeek = 14; // 월~금 3타임 - 금1타임(본인) = 14타임/주
-  const instrBase = instrTimesPerWeek * 4.3 * instrFee;
+  const rent = 165, mgmt = 20;
+  const instrBase = 14 * 4.3 * instrFee; // 14타임/주 × 4.3주
   const fixedCost = rent + mgmt + instrBase + etcCost;
-
-  // 핵심: 매출은 신규에서만
-  // 정상화 후(소진 완료): 재등록 회원 + 누적 신규
-  const reRegister = Math.round(existMembers * retention);
-  const steadyNew = newPerMonth * burnMonths; // 소진 기간 동안 모은 신규
-  const steadyTotal = reRegister + steadyNew;
-  const steadyRevenue = steadyTotal * price;
-  const steadyProfit = steadyRevenue - fixedCost;
-
-  // BEP: 몇 명의 유료회원이 있어야 흑자?
-  const bepMembers = Math.ceil(fixedCost / price);
-
-  // 소진 기간 중 적자 (매출 = 신규만)
-  const burnLossTotal = Array.from({length: burnMonths}, (_, i) => {
-    const mNew = newPerMonth * (i + 1);
-    return mNew * price - fixedCost;
-  }).reduce((a, b) => a + b, 0);
+  const bep = Math.ceil(fixedCost / price);
 
   // KPI
   document.getElementById('kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-label">월 고정비용</div><div class="kpi-value red">${fixedCost.toFixed(0)}만</div><div class="kpi-sub">월세165+관리20+강사${instrBase.toFixed(0)}+기타${etcCost}</div></div>
-    <div class="kpi"><div class="kpi-label">BEP 유료회원</div><div class="kpi-value blue">${bepMembers}명</div><div class="kpi-sub">월 ${price}만원 × ${bepMembers}명 = 비용 커버</div></div>
-    <div class="kpi"><div class="kpi-label">정상화 후 순익</div><div class="kpi-value ${steadyProfit >= 0 ? 'green' : 'red'}">${steadyProfit >= 0 ? '+' : ''}${steadyProfit.toFixed(0)}만</div><div class="kpi-sub">유료 ${steadyTotal}명 (재등록${reRegister}+신규${steadyNew})</div></div>
-    <div class="kpi"><div class="kpi-label">소진기간 누적적자</div><div class="kpi-value orange">${Math.abs(burnLossTotal).toFixed(0)}만</div><div class="kpi-sub">${burnMonths}개월간 기존회원 매출 0</div></div>
+    <div class="kpi"><div class="label">월 고정비</div><div class="value red">${fixedCost.toFixed(0)}만</div><div class="sub">월세+관리+강사+기타</div></div>
+    <div class="kpi"><div class="label">손익분기 회원수</div><div class="value blue">${bep}명</div><div class="sub">이 이상이면 흑자</div></div>
+    <div class="kpi"><div class="label">회원 1명당 수익</div><div class="value green">+${price}만</div><div class="sub">추가 1명 = +${price}만 매출</div></div>
   `;
 
-  // Alert
-  document.getElementById('alertBox').innerHTML = `⚠️ <strong>기존 ${existMembers}명은 비용입니다.</strong> 잔여횟수 소화 의무만 있고 매출 없음. 인수 전 반드시 회원별 잔여횟수 확인 필요.`;
-
-  // P&L
-  document.getElementById('plTable').innerHTML = `
-    <tr><th>항목</th><th>금액</th></tr>
-    <tr><td>매출 (유료 ${steadyTotal}명 × ${price}만)</td><td class="green">+${steadyRevenue.toFixed(0)}만</td></tr>
-    <tr><td>월세</td><td class="red">-${rent}만</td></tr>
-    <tr><td>관리비</td><td class="red">-${mgmt}만</td></tr>
-    <tr><td>강사비 (${instrTimesPerWeek}타임/주)</td><td class="red">-${instrBase.toFixed(0)}만</td></tr>
-    <tr><td>기타</td><td class="red">-${etcCost}만</td></tr>
-    <tr style="border-top:2px solid #dee2e6"><td><strong>순이익</strong></td><td class="${steadyProfit >= 0 ? 'green' : 'red'}"><strong>${steadyProfit >= 0 ? '+' : ''}${steadyProfit.toFixed(0)}만</strong></td></tr>
-  `;
-
-  // Bar chart - 신규 회원수별
-  const steps = [5, 10, 15, 20, 25, 30, 35, 40];
-  const maxVal = Math.max(...steps.map(n => Math.abs(n * price - fixedCost)));
-  let bars = '';
-  steps.forEach(n => {
-    const p = n * price - fixedCost;
-    const h = Math.max(3, Math.abs(p) / maxVal * 110);
-    bars += `<div class="bar-item"><div class="bar-num ${p >= 0 ? 'green' : 'red'}">${p >= 0 ? '+' : ''}${p.toFixed(0)}</div><div class="bar-fill ${p >= 0 ? 'pos' : 'neg'}" style="height:${h}px"></div><div class="bar-lbl">${n}명</div></div>`;
-  });
-  document.getElementById('barChart').innerHTML = bars;
-
-  // Timeline
-  let tl = '';
-  let cum = 0;
-  for (let i = 1; i <= 12; i++) {
-    let paying;
-    if (i <= burnMonths) {
-      paying = newPerMonth * i; // 소진 중: 신규만
-    } else {
-      paying = reRegister + newPerMonth * i; // 소진 후: 재등록 + 누적신규
-    }
-    const mProfit = paying * price - fixedCost;
-    cum += mProfit;
-    const cls = mProfit >= 0 ? 'profit' : 'loss';
-    tl += `<div class="tl-item ${cls}"><div class="tl-month">${i}월차</div><div class="tl-val ${mProfit >= 0 ? 'green' : 'red'}">${mProfit >= 0 ? '+' : ''}${mProfit.toFixed(0)}</div><div class="tl-tag">${i <= burnMonths ? '소진중' : paying + '명'}</div></div>`;
+  // 테이블: 5명 단위로
+  let rows = '';
+  for (let n = 5; n <= 50; n += 5) {
+    const rev = n * price;
+    const profit = rev - fixedCost;
+    const isBreak = n >= bep && n - 5 < bep;
+    const status = profit >= 0 ? '<span class="green">✓ 흑자</span>' : '<span class="red">적자</span>';
+    rows += `<tr class="${isBreak ? 'highlight-row' : ''}"><td>${n}명</td><td>${rev.toFixed(0)}만</td><td>${fixedCost.toFixed(0)}만</td><td class="${profit >= 0 ? 'green' : 'red'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만</td><td>${status}</td></tr>`;
   }
-  document.getElementById('timeline').innerHTML = tl;
+  document.querySelector('#mainTable tbody').innerHTML = rows;
 
   // Insights
-  const monthsToBep = (() => {
-    for (let i = 1; i <= 24; i++) {
-      const p = i <= burnMonths ? newPerMonth * i : reRegister + newPerMonth * i;
-      if (p >= bepMembers) return i;
-    }
-    return '24+';
-  })();
   document.getElementById('insights').innerHTML = `
-    <div class="insight">📌 <strong>BEP ${bepMembers}명</strong>까지 월 ${newPerMonth}명 모집 시 <strong>${monthsToBep}개월차</strong>에 흑자 전환</div>
-    <div class="insight">💰 초기 투자: 권리금 1,000만 + 소진기간 적자 ${Math.abs(burnLossTotal).toFixed(0)}만 = <strong>실질 투자 ${(1000 + Math.abs(burnLossTotal)).toFixed(0)}만원</strong></div>
-    <div class="insight">🔑 인수 전 확인: ① 회원별 잔여횟수 ② 만료 임박 회원 수 ③ 재등록 의향 → 소진기간 & 재등록율 정확도 ↑</div>
-    <div class="insight">💡 재등록율 ${(retention*100).toFixed(0)}% 가정 → 37명 중 <strong>${reRegister}명만 재결제</strong>. 나머지 ${existMembers - reRegister}명은 이탈 예상</div>
+    <div class="insight">📌 <strong>유료회원 ${bep}명</strong>부터 흑자. 그 전까지는 매달 적자.</div>
+    <div class="insight">💰 초기 실질 투자 = 권리금 1,000만 + 잔여횟수 소진기간 적자 (기존회원 수업 제공 비용)</div>
+    <div class="insight">🎯 월 5명 신규 모집 시 → ${Math.ceil(bep / 5)}개월차에 BEP 도달</div>
+    <div class="insight">🔑 강사비 ${instrBase.toFixed(0)}만이 비용의 ${(instrBase/fixedCost*100).toFixed(0)}% 차지. 본인 수업 늘리면 수익성 ↑</div>
   `;
 }
 document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
