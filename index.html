@@ -61,6 +61,8 @@ th { color: #94a3b8; font-weight: 500; }
 <div class="row">
 <div>
 <div class="input-group"><label>기존 회원수</label><input type="number" id="existMembers" value="37"></div>
+<div class="input-group"><label>잔여횟수 소진 (개월)</label><input type="number" id="burnMonths" value="2" min="0" max="6"></div>
+<div class="input-group"><label>기존→재등록율 (%)</label><input type="number" id="retentionRate" value="60"></div>
 <div class="input-group"><label>신규 회원 (월)</label><input type="number" id="newMembers" value="0"></div>
 <div class="input-group"><label>주2회 가격 (만원)</label><input type="number" id="price2x" value="40"></div>
 <div class="input-group"><label>주3회 가격 (만원)</label><input type="number" id="price3x" value="55"></div>
@@ -115,7 +117,8 @@ function calc() {
   const v = (id) => parseFloat(document.getElementById(id).value) || 0;
   const existMembers = v('existMembers');
   const newMembers = v('newMembers');
-  const totalMembers = existMembers + newMembers;
+  const burnMonths = v('burnMonths');
+  const retentionRate = v('retentionRate') / 100;
   const price2x = v('price2x');
   const price3x = v('price3x');
   const ratio2x = v('ratio2x') / 100;
@@ -125,9 +128,17 @@ function calc() {
   const mgmt = v('mgmt');
   const etc = v('etc');
 
-  // 매출: 회원수 × 평균 단가
   const avgPrice = price2x * ratio2x + price3x * (1 - ratio2x);
-  const revenue = totalMembers * avgPrice;
+
+  // 기존회원: 잔여횟수 소진 중 = 매출 0 (수업은 제공해야 함)
+  // 소진 후: 재등록율만큼 유료 전환
+  const paidExistMembers = 0; // 현재 시점(1개월차)은 소진 중
+  const paidNewMembers = newMembers;
+  const totalPaying = paidNewMembers; // 즉시 매출 가능한 회원
+  const afterBurnPaying = Math.round(existMembers * retentionRate) + newMembers * burnMonths; // 소진 후
+
+  // "정상화 후" 기준으로 BEP 계산
+  const revenue = afterBurnPaying * avgPrice;
 
   // 강사비: 월~목 오전1+오후2 = 3타임/일 × 4일 = 12타임/주, 금 오전1+오후2(강사) = 2타임 → 주 14타임
   // 금요일: 본인 수업이므로 강사는 오전1+오후1? 문맥상 금요일 본인수업 = 일부 타임
@@ -156,17 +167,18 @@ function calc() {
 
   // KPI Cards
   document.getElementById('kpiCards').innerHTML = `
-    <div class="card"><div class="card-label">총 회원수</div><div class="card-value neutral">${totalMembers}명</div></div>
-    <div class="card"><div class="card-label">월 매출</div><div class="card-value neutral">${revenue.toFixed(0)}만원</div></div>
+    <div class="card"><div class="card-label">기존 회원 (재고)</div><div class="card-value warn">${existMembers}명</div><div style="font-size:0.7rem;color:#94a3b8">잔여횟수 소진 중</div></div>
+    <div class="card"><div class="card-label">정상화 후 유료회원</div><div class="card-value neutral">${afterBurnPaying}명</div><div style="font-size:0.7rem;color:#94a3b8">재등록 ${Math.round(existMembers*retentionRate)}+신규 ${newMembers*burnMonths}</div></div>
+    <div class="card"><div class="card-label">정상화 후 월매출</div><div class="card-value neutral">${revenue.toFixed(0)}만원</div></div>
     <div class="card"><div class="card-label">월 비용</div><div class="card-value warn">${totalCost.toFixed(0)}만원</div></div>
-    <div class="card"><div class="card-label">월 순이익</div><div class="card-value ${profit >= 0 ? 'positive' : 'negative'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만원</div></div>
-    <div class="card"><div class="card-label">BEP 회원수</div><div class="card-value warn">${bepMembers}명</div></div>
-    <div class="card"><div class="card-label">추가 필요</div><div class="card-value ${additionalNeeded > 0 ? 'negative' : 'positive'}">${additionalNeeded > 0 ? '+' + additionalNeeded + '명' : '달성!'}</div></div>
+    <div class="card"><div class="card-label">정상화 후 순이익</div><div class="card-value ${profit >= 0 ? 'positive' : 'negative'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만원</div></div>
+    <div class="card"><div class="card-label">BEP 유료회원수</div><div class="card-value warn">${bepMembers}명</div></div>
   `;
 
   // P&L Table
   document.querySelector('#plTable tbody').innerHTML = `
-    <tr><td>매출 (${totalMembers}명 × ${avgPrice.toFixed(0)}만)</td><td class="positive">+${revenue.toFixed(0)}만</td></tr>
+    <tr><td colspan="2" style="color:#fbbf24;font-size:0.75rem">⚠️ 정상화 후 기준 (잔여횟수 ${burnMonths}개월 소진 후)</td></tr>
+    <tr><td>매출 (${afterBurnPaying}명 × ${avgPrice.toFixed(0)}만)</td><td class="positive">+${revenue.toFixed(0)}만</td></tr>
     <tr><td>─ 월세</td><td class="negative">-${rent}만</td></tr>
     <tr><td>─ 관리비</td><td class="negative">-${mgmt}만</td></tr>
     <tr><td>─ 강사비 (기본 ${instructorTimesPerWeek}타임/주)</td><td class="negative">-${instructorCostBase.toFixed(0)}만</td></tr>
@@ -201,23 +213,30 @@ function calc() {
     </div>
   `;
 
-  // ROI Timeline
+  // ROI Timeline - 잔여횟수 소진 기간 반영
   const months = [];
   let cumProfit = 0;
   for (let i = 1; i <= 12; i++) {
-    const mMembers = Math.min(existMembers + newMembers * i, 100);
-    const mRev = mMembers * avgPrice;
+    let mPaying;
+    if (i <= burnMonths) {
+      // 소진 기간: 기존회원 매출 0, 신규만
+      mPaying = newMembers * i;
+    } else {
+      // 소진 후: 재등록 회원 + 누적 신규
+      mPaying = Math.round(existMembers * retentionRate) + newMembers * i;
+    }
+    const mRev = mPaying * avgPrice;
     const mCost = fixedCost + instructorCostBase + mRev * incentiveRate;
     const mProfit = mRev - mCost;
     cumProfit += mProfit;
-    months.push({ month: i, members: mMembers, profit: mProfit, cum: cumProfit });
+    months.push({ month: i, paying: mPaying, profit: mProfit, cum: cumProfit, burning: i <= burnMonths });
   }
   let timeline = '<div class="timeline">';
-  months.slice(0, 6).forEach(m => {
+  months.slice(0, 8).forEach(m => {
     const recovered = m.cum >= initialInvestment;
+    const tag = m.burning ? '<span class="tag tag-red">잔여횟수 소진 중</span>' : recovered ? '<span class="tag tag-green">권리금 회수!</span>' : '';
     timeline += `<div class="timeline-item ${recovered ? 'done' : ''}">
-      <strong>${m.month}개월차</strong> - 회원 ${m.members.toFixed(0)}명 | 월 순익 ${m.profit >= 0 ? '+' : ''}${m.profit.toFixed(0)}만 | 누적 ${m.cum >= 0 ? '+' : ''}${m.cum.toFixed(0)}만
-      ${recovered ? '<span class="tag tag-green">권리금 회수!</span>' : ''}
+      <strong>${m.month}개월차</strong> ${tag} - 유료 ${m.paying}명 | 월 순익 ${m.profit >= 0 ? '+' : ''}${m.profit.toFixed(0)}만 | 누적 ${m.cum >= 0 ? '+' : ''}${m.cum.toFixed(0)}만
     </div>`;
   });
   timeline += '</div>';
@@ -228,15 +247,14 @@ function calc() {
 
   // Insights
   const insights = [];
-  if (additionalNeeded > 0) {
-    insights.push(`⚠️ 현재 37명으로는 월 <strong>${Math.abs(profit).toFixed(0)}만원 적자</strong>. ${additionalNeeded}명 추가 모집이 급선무입니다.`);
+  const burnLoss = burnMonths * (fixedCost + instructorCostBase);
+  insights.push(`🚨 <strong>확인 필수</strong>: 기존 37명 잔여횟수 파악 → 소진 기간 ${burnMonths}개월 동안 매출 없이 비용 ${burnLoss.toFixed(0)}만원 발생 (신규 없을 시)`);
+  insights.push(`📋 인수 전 체크: ① 회원별 잔여횟수 리스트 ② 평균 남은 횟수 ③ 만료 예정 회원 수 → 이걸로 소진 기간 정확히 산출`);
+  if (profit < 0) {
+    insights.push(`⚠️ 정상화 후에도 월 <strong>${Math.abs(profit).toFixed(0)}만원 적자</strong>. 재등록율 ${(retentionRate*100).toFixed(0)}% + 월 신규 ${newMembers}명으로는 부족합니다.`);
   }
-  if (instructorCostBase > revenue * 0.3) {
-    insights.push(`💸 강사비(기본)가 매출의 ${(instructorCostBase/revenue*100).toFixed(0)}%를 차지합니다. 본인 수업 비중을 늘리면 수익성이 크게 개선됩니다.`);
-  }
-  insights.push(`📌 본인 수업 확대 시 (금+토 → 주 5타임 추가 직접 운영) 강사비 약 ${(5 * 4.3 * instructorFee).toFixed(0)}만원 절감 가능`);
-  insights.push(`🎯 회원 유지율이 핵심. 기존 37명 이탈 방지 + 월 ${Math.ceil(additionalNeeded / 3)}명씩 신규 모집 시 3개월 내 BEP 도달`);
-  insights.push(`💡 주3회 비율을 높이면 BEP가 낮아짐. 현재 주3회 40% → 60%로 올리면 BEP ${Math.ceil((fixedCost + instructorCostBase) / ((price2x * 0.4 + price3x * 0.6) * (1 - incentiveRate)))}명`);
+  insights.push(`🎯 재등록율이 핵심: 37명 중 ${Math.round(existMembers*retentionRate)}명 재등록 가정. 실제로 70% 달성 시 유료 ${Math.round(existMembers*0.7) + newMembers*burnMonths}명`);
+  insights.push(`💡 BEP ${bepMembers}명 도달 전략: 재등록 ${Math.round(existMembers*retentionRate)}명 + 월 ${Math.ceil((bepMembers - Math.round(existMembers*retentionRate)) / burnMonths)}명 신규 모집 필요`);
 
   document.getElementById('insights').innerHTML = insights.map(i => `<div class="highlight-box" style="margin-bottom:8px"><p>${i}</p></div>`).join('');
 }
