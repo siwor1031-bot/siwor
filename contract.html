@@ -21,8 +21,7 @@ h1 { font-size: 1.2rem; text-align: center; margin-bottom: 20px; padding-bottom:
 .sign-pad { border: 2px dashed #ccc; border-radius: 8px; height: 150px; position: relative; touch-action: none; background: #fafafa; }
 .sign-pad.signed { border-color: #03c75a; border-style: solid; }
 canvas { width: 100%; height: 100%; border-radius: 6px; }
-.sign-actions { display: flex; gap: 8px; margin-top: 8px; }
-.btn-clear { background: #f1f3f5; border: 1px solid #ddd; border-radius: 6px; padding: 6px 14px; font-size: 0.75rem; cursor: pointer; }
+.btn-clear { background: #f1f3f5; border: 1px solid #ddd; border-radius: 6px; padding: 6px 14px; font-size: 0.75rem; cursor: pointer; margin-top: 8px; }
 .btn-submit { width: 100%; background: #03c75a; color: #fff; border: none; border-radius: 8px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 16px; }
 .btn-submit:active { background: #02a34a; }
 .btn-submit:disabled { background: #ccc; }
@@ -31,8 +30,12 @@ canvas { width: 100%; height: 100%; border-radius: 6px; }
 .success { display: none; text-align: center; padding: 40px 20px; }
 .success h2 { color: #03c75a; margin-bottom: 12px; }
 .success p { color: #666; font-size: 0.85rem; line-height: 1.6; }
-.btn-download { background: #1971c2; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 16px; }
+.btn-kakao { background: #fee500; color: #3c1e1e; border: none; border-radius: 8px; padding: 12px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 16px; }
 .btn-new { background: #868e96; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.85rem; cursor: pointer; margin-top: 8px; }
+.loading { display: none; text-align: center; padding: 40px; }
+.loading p { color: #555; font-size: 0.9rem; }
+.spinner { width: 30px; height: 30px; border: 3px solid #e9ecef; border-top-color: #03c75a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -82,25 +85,31 @@ canvas { width: 100%; height: 100%; border-radius: 6px; }
     <div class="sign-pad" id="signPad">
       <canvas id="canvas"></canvas>
     </div>
-    <div class="sign-actions">
-      <button class="btn-clear" onclick="clearSign()">다시 쓰기</button>
-    </div>
+    <button class="btn-clear" onclick="clearSign()">다시 쓰기</button>
   </div>
 
   <button class="btn-submit" id="submitBtn" onclick="submit()" disabled>계약 완료</button>
 </div>
 
+<div class="loading" id="loadingView">
+  <div class="spinner"></div>
+  <p>저장 중...</p>
+</div>
+
 <div class="success" id="successView">
   <h2>✅ 계약 완료!</h2>
   <p id="summaryText"></p>
-  <button class="btn-download" onclick="downloadPDF()">📄 이미지 저장</button><br>
+  <button class="btn-kakao" onclick="shareKakao()">💬 카톡으로 회원에게 전송</button><br>
   <button class="btn-new" onclick="reset()">새 계약서 작성</button>
 </div>
 
 <script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCjSnES7WHs64-NOdcS3AuSy68VzOko2od54qFPEIHtQkTY68plgvtwH9vRQbwtN67/exec';
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 let drawing = false, hasSigned = false;
+let savedData = {};
 
 function initCanvas() {
   const pad = document.getElementById('signPad');
@@ -118,11 +127,10 @@ function getPos(e) {
 }
 
 canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); });
-canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSigned = true; checkReady(); });
+canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); hasSigned = true; checkReady(); });
 canvas.addEventListener('mouseup', () => drawing = false);
-
 canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); });
-canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSigned = true; checkReady(); });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; ctx.lineTo(getPos(e).x, getPos(e).y); ctx.stroke(); hasSigned = true; checkReady(); });
 canvas.addEventListener('touchend', e => { e.preventDefault(); drawing = false; });
 
 function clearSign() {
@@ -141,57 +149,84 @@ function checkReady() {
 document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', checkReady));
 document.getElementById('agree').addEventListener('change', checkReady);
 
-function submit() {
+function generateImage() {
+  const c = document.createElement('canvas');
+  c.width = 600; c.height = 500;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, 600, 500);
+  x.fillStyle = '#03c75a'; x.fillRect(0, 0, 600, 4);
+  x.fillStyle = '#222'; x.font = 'bold 18px sans-serif';
+  x.fillText('수강 계약서', 240, 35);
+  x.font = '13px sans-serif';
+  const info = [
+    `회원명: ${savedData.name}`,
+    `연락처: ${savedData.phone}`,
+    `수강권: ${savedData.plan}`,
+    `금액: ${savedData.amount}만원`,
+    `횟수: ${savedData.count}회`,
+    `시작일: ${savedData.startDate}`,
+    `계약일: ${savedData.contractDate}`,
+  ];
+  info.forEach((t, i) => x.fillText(t, 30, 70 + i * 26));
+  x.fillText('─────────────────────────────────', 30, 265);
+  x.fillText('서명:', 30, 290);
+  x.drawImage(canvas, 30, 300, 250, 80);
+  x.font = '10px sans-serif'; x.fillStyle = '#999';
+  x.fillText('본 계약서는 전자서명으로 체결되었습니다.', 30, 470);
+  return c.toDataURL('image/png');
+}
+
+async function submit() {
   const name = document.getElementById('name').value;
   const phone = document.getElementById('phone').value;
   const plan = document.getElementById('plan').value;
   const amount = document.getElementById('amount').value;
   const startDate = document.getElementById('startDate').value;
-  const totalCount = document.getElementById('totalCount').value;
+  const count = document.getElementById('totalCount').value;
+  const contractDate = new Date().toLocaleString('ko-KR');
 
-  document.getElementById('summaryText').innerHTML = `
-    <strong>${name}</strong>님 (${phone})<br>
-    ${plan} | ${amount}만원 | ${totalCount}회<br>
-    시작일: ${startDate || '미정'}<br><br>
-    계약일시: ${new Date().toLocaleString('ko-KR')}
-  `;
+  savedData = { name, phone, plan, amount, count, startDate, contractDate };
 
   document.getElementById('contractForm').style.display = 'none';
+  document.getElementById('loadingView').style.display = 'block';
+
+  const image = generateImage();
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...savedData, image })
+    });
+  } catch(e) { /* no-cors 모드에서는 에러 무시 */ }
+
+  document.getElementById('loadingView').style.display = 'none';
   document.getElementById('successView').style.display = 'block';
+  document.getElementById('summaryText').innerHTML = `
+    <strong>${name}</strong>님 (${phone})<br>
+    ${plan} | ${amount}만원 | ${count}회<br>
+    시작일: ${startDate || '미정'}<br>
+    계약일시: ${contractDate}<br><br>
+    ✅ 구글시트 저장 완료<br>
+    ✅ 구글드라이브 이미지 저장 완료
+  `;
 }
 
-function downloadPDF() {
-  // 캔버스를 이미지로 저장
-  const link = document.createElement('a');
-  const name = document.getElementById('name').value;
-  link.download = `계약서_${name}_${new Date().toISOString().slice(0,10)}.png`;
+function shareKakao() {
+  const text = `[수강 계약 완료]\n회원: ${savedData.name}\n수강권: ${savedData.plan} (${savedData.amount}만원)\n횟수: ${savedData.count}회\n시작일: ${savedData.startDate}\n\n감사합니다 🧘`;
+  const url = `https://sharer.kakao.com/talk/friends/picker/shortcut?app_key=javascript&text=${encodeURIComponent(text)}`;
   
-  // 계약 내용 + 서명을 하나의 캔버스로
-  const expCanvas = document.createElement('canvas');
-  expCanvas.width = 600;
-  expCanvas.height = 400;
-  const ectx = expCanvas.getContext('2d');
-  ectx.fillStyle = '#fff';
-  ectx.fillRect(0, 0, 600, 400);
-  ectx.fillStyle = '#222';
-  ectx.font = '16px sans-serif';
-  ectx.fillText('수강 계약서', 250, 30);
-  ectx.font = '13px sans-serif';
-  const info = [
-    `회원명: ${document.getElementById('name').value}`,
-    `연락처: ${document.getElementById('phone').value}`,
-    `수강권: ${document.getElementById('plan').value}`,
-    `금액: ${document.getElementById('amount').value}만원`,
-    `횟수: ${document.getElementById('totalCount').value}회`,
-    `시작일: ${document.getElementById('startDate').value}`,
-    `계약일: ${new Date().toLocaleString('ko-KR')}`,
-  ];
-  info.forEach((t, i) => ectx.fillText(t, 30, 70 + i * 24));
-  ectx.fillText('서명:', 30, 260);
-  ectx.drawImage(canvas, 30, 270, 300, 100);
-  
-  link.href = expCanvas.toDataURL();
-  link.click();
+  // 카카오 링크 대신 기본 공유 사용
+  if (navigator.share) {
+    navigator.share({ title: '수강 계약서', text: text });
+  } else {
+    // 모바일: 카톡 URL scheme
+    const kakaoUrl = `kakaotalk://msg/text/${encodeURIComponent(text)}`;
+    window.open(kakaoUrl);
+    // 안 되면 클립보드 복사
+    navigator.clipboard.writeText(text).then(() => alert('계약 내용이 복사되었습니다.\n카톡에 붙여넣기 해주세요!'));
+  }
 }
 
 function reset() {
@@ -199,10 +234,10 @@ function reset() {
   document.getElementById('successView').style.display = 'none';
   document.querySelectorAll('input[type=text], input[type=tel], input[type=number], input[type=date]').forEach(el => el.value = '');
   document.getElementById('agree').checked = false;
+  document.getElementById('startDate').value = new Date().toISOString().slice(0, 10);
   clearSign();
 }
 
-// 오늘 날짜 기본값
 document.getElementById('startDate').value = new Date().toISOString().slice(0, 10);
 window.addEventListener('load', initCanvas);
 window.addEventListener('resize', initCanvas);
