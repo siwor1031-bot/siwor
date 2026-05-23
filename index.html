@@ -3,263 +3,210 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>요가원 경영 인사이트 대시보드</title>
+<title>요가원 경영 대시보드</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Pretendard', -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 24px; }
-.dashboard { max-width: 1400px; margin: 0 auto; }
-h1 { font-size: 1.5rem; margin-bottom: 8px; color: #f8fafc; }
-.subtitle { color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-.card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
-.card-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.card-value { font-size: 1.6rem; font-weight: 700; }
-.positive { color: #4ade80; }
-.negative { color: #f87171; }
-.neutral { color: #60a5fa; }
-.warn { color: #fbbf24; }
-.section { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; margin-bottom: 16px; }
-.section h2 { font-size: 1rem; margin-bottom: 16px; color: #f1f5f9; }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #334155; }
-th { color: #94a3b8; font-weight: 500; }
-.input-group { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-.input-group label { font-size: 0.8rem; color: #94a3b8; min-width: 120px; }
-.input-group input, .input-group select { background: #0f172a; border: 1px solid #475569; border-radius: 6px; padding: 6px 10px; color: #e2e8f0; font-size: 0.85rem; width: 100px; }
-.bar-chart { display: flex; align-items: end; gap: 4px; height: 120px; margin-top: 12px; }
-.bar { background: #3b82f6; border-radius: 4px 4px 0 0; min-width: 30px; flex: 1; position: relative; transition: height 0.3s; }
-.bar.profit { background: #4ade80; }
-.bar.loss { background: #f87171; }
-.bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.65rem; color: #94a3b8; white-space: nowrap; }
-.bar-value { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 0.65rem; color: #e2e8f0; white-space: nowrap; }
-.highlight-box { background: #1e3a5f; border: 1px solid #3b82f6; border-radius: 8px; padding: 16px; margin-top: 12px; }
-.highlight-box p { font-size: 0.85rem; line-height: 1.6; }
-.bep-indicator { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 600; }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
-.tag-red { background: #7f1d1d; color: #fca5a5; }
-.tag-green { background: #14532d; color: #86efac; }
-.tag-yellow { background: #713f12; color: #fde047; }
-.timeline { position: relative; padding-left: 20px; border-left: 2px solid #334155; }
-.timeline-item { margin-bottom: 16px; position: relative; }
-.timeline-item::before { content: ''; position: absolute; left: -25px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; }
-.timeline-item.done::before { background: #4ade80; }
+body { font-family: -apple-system, 'Pretendard', sans-serif; background: #f8f9fa; color: #1a1a2e; min-height: 100vh; }
+.header { background: #fff; border-bottom: 1px solid #e9ecef; padding: 20px 32px; }
+.header h1 { font-size: 1.25rem; font-weight: 700; color: #1a1a2e; }
+.header p { font-size: 0.8rem; color: #868e96; margin-top: 2px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e9ecef; }
+.kpi-label { font-size: 0.7rem; color: #868e96; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.kpi-value { font-size: 1.8rem; font-weight: 700; }
+.kpi-sub { font-size: 0.72rem; color: #868e96; margin-top: 4px; }
+.red { color: #e03131; }
+.green { color: #2f9e44; }
+.blue { color: #1971c2; }
+.orange { color: #e8590c; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.card { background: #fff; border-radius: 12px; padding: 24px; border: 1px solid #e9ecef; }
+.card h2 { font-size: 0.85rem; font-weight: 600; color: #495057; margin-bottom: 16px; }
+.controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.ctrl { display: flex; flex-direction: column; gap: 4px; }
+.ctrl label { font-size: 0.7rem; color: #868e96; }
+.ctrl input { border: 1px solid #dee2e6; border-radius: 6px; padding: 8px 10px; font-size: 0.85rem; background: #f8f9fa; width: 100%; }
+.ctrl input:focus { outline: none; border-color: #1971c2; background: #fff; }
+table { width: 100%; font-size: 0.82rem; }
+th, td { padding: 10px 0; text-align: left; border-bottom: 1px solid #f1f3f5; }
+th { color: #868e96; font-weight: 500; }
+td:last-child { text-align: right; font-weight: 600; }
+.bar-wrap { display: flex; align-items: end; gap: 6px; height: 140px; padding-top: 20px; }
+.bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.3s; min-height: 2px; }
+.bar-fill.pos { background: #2f9e44; }
+.bar-fill.neg { background: #e03131; }
+.bar-num { font-size: 0.65rem; font-weight: 600; }
+.bar-lbl { font-size: 0.6rem; color: #868e96; }
+.insight { background: #f1f3f5; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; font-size: 0.8rem; line-height: 1.5; }
+.insight strong { color: #1a1a2e; }
+.alert-box { background: #fff5f5; border: 1px solid #ffc9c9; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; font-size: 0.8rem; color: #c92a2a; }
+.timeline { display: flex; gap: 0; margin-top: 8px; }
+.tl-item { flex: 1; text-align: center; padding: 10px 4px; border-top: 3px solid #dee2e6; position: relative; }
+.tl-item.loss { border-top-color: #e03131; }
+.tl-item.profit { border-top-color: #2f9e44; }
+.tl-item .tl-month { font-size: 0.65rem; color: #868e96; }
+.tl-item .tl-val { font-size: 0.72rem; font-weight: 600; margin-top: 2px; }
+.tl-item .tl-tag { font-size: 0.6rem; margin-top: 2px; }
+@media (max-width: 768px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .grid2 { grid-template-columns: 1fr; }
+  .controls { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
-<div class="dashboard">
-<h1>🧘 요가원 인수 경영 인사이트</h1>
-<p class="subtitle">손익분기점 시뮬레이션 & 경영 분석 대시보드 | 2026.05 기준</p>
+<div class="header">
+  <h1>🧘 요가원 인수 경영 대시보드</h1>
+  <p>손익분기점 시뮬레이션 | 기존회원 = 비용(잔여횟수 소화 의무), 매출 = 신규회원만</p>
+</div>
+<div class="container">
 
-<!-- 핵심 지표 카드 -->
-<div class="grid" id="kpiCards"></div>
+<!-- 경고 -->
+<div class="alert-box" id="alertBox"></div>
 
-<!-- 시뮬레이션 컨트롤 -->
-<div class="section">
-<h2>⚙️ 시뮬레이션 변수 조정</h2>
-<div class="row">
-<div>
-<div class="input-group"><label>기존 회원수</label><input type="number" id="existMembers" value="37"></div>
-<div class="input-group"><label>잔여횟수 소진 (개월)</label><input type="number" id="burnMonths" value="2" min="0" max="6"></div>
-<div class="input-group"><label>기존→재등록율 (%)</label><input type="number" id="retentionRate" value="60"></div>
-<div class="input-group"><label>신규 회원 (월)</label><input type="number" id="newMembers" value="0"></div>
-<div class="input-group"><label>주2회 가격 (만원)</label><input type="number" id="price2x" value="40"></div>
-<div class="input-group"><label>주3회 가격 (만원)</label><input type="number" id="price3x" value="55"></div>
-<div class="input-group"><label>주2회 비율 (%)</label><input type="number" id="ratio2x" value="60"></div>
-</div>
-<div>
-<div class="input-group"><label>강사 타임당 (만원)</label><input type="number" id="instructorFee" value="3.5" step="0.5"></div>
-<div class="input-group"><label>강사 인센 (%)</label><input type="number" id="incentiveRate" value="10"></div>
-<div class="input-group"><label>월세 (만원)</label><input type="number" id="rent" value="165"></div>
-<div class="input-group"><label>관리비 (만원)</label><input type="number" id="mgmt" value="20"></div>
-<div class="input-group"><label>기타비용 (만원)</label><input type="number" id="etc" value="30"></div>
-</div>
-</div>
+<!-- KPI -->
+<div class="kpi-row" id="kpis"></div>
+
+<!-- 변수 조정 -->
+<div class="card" style="margin-bottom:16px">
+  <h2>시뮬레이션 변수</h2>
+  <div class="controls">
+    <div class="ctrl"><label>월 신규 회원</label><input type="number" id="newPerMonth" value="5"></div>
+    <div class="ctrl"><label>회원가 (만원/월)</label><input type="number" id="memberPrice" value="46"></div>
+    <div class="ctrl"><label>기존회원 잔여 (개월)</label><input type="number" id="burnMonths" value="2"></div>
+    <div class="ctrl"><label>기존→재등록율 (%)</label><input type="number" id="retention" value="50"></div>
+    <div class="ctrl"><label>강사 타임당 (만원)</label><input type="number" id="instrFee" value="3.5" step="0.5"></div>
+    <div class="ctrl"><label>기타비용 (만원)</label><input type="number" id="etcCost" value="30"></div>
+  </div>
 </div>
 
-<!-- 손익 구조 -->
-<div class="row">
-<div class="section">
-<h2>📊 월간 손익 구조</h2>
-<table id="plTable">
-<thead><tr><th>항목</th><th>금액</th></tr></thead>
-<tbody></tbody>
-</table>
-</div>
-<div class="section">
-<h2>📈 회원수별 월 손익 추이</h2>
-<div class="bar-chart" id="barChart"></div>
-</div>
+<!-- 손익 + 차트 -->
+<div class="grid2">
+  <div class="card">
+    <h2>월간 손익 (정상화 후)</h2>
+    <table id="plTable"></table>
+  </div>
+  <div class="card">
+    <h2>신규 회원수별 월 손익</h2>
+    <div class="bar-wrap" id="barChart"></div>
+  </div>
 </div>
 
-<!-- BEP 분석 -->
-<div class="section">
-<h2>🎯 손익분기점 (BEP) 분석</h2>
-<div id="bepAnalysis"></div>
-</div>
-
-<!-- 투자 회수 -->
-<div class="section">
-<h2>💰 초기 투자 회수 타임라인</h2>
-<div id="roiTimeline"></div>
+<!-- 타임라인 -->
+<div class="card" style="margin-bottom:16px">
+  <h2>12개월 캐시플로우</h2>
+  <div class="timeline" id="timeline"></div>
 </div>
 
 <!-- 인사이트 -->
-<div class="section">
-<h2>💡 경영 인사이트</h2>
-<div id="insights"></div>
-</div>
+<div class="card">
+  <h2>핵심 인사이트</h2>
+  <div id="insights"></div>
 </div>
 
+</div>
 <script>
 function calc() {
-  const v = (id) => parseFloat(document.getElementById(id).value) || 0;
-  const existMembers = v('existMembers');
-  const newMembers = v('newMembers');
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+  const newPerMonth = v('newPerMonth');
+  const price = v('memberPrice');
   const burnMonths = v('burnMonths');
-  const retentionRate = v('retentionRate') / 100;
-  const price2x = v('price2x');
-  const price3x = v('price3x');
-  const ratio2x = v('ratio2x') / 100;
-  const instructorFee = v('instructorFee');
-  const incentiveRate = v('incentiveRate') / 100;
-  const rent = v('rent');
-  const mgmt = v('mgmt');
-  const etc = v('etc');
+  const retention = v('retention') / 100;
+  const instrFee = v('instrFee');
+  const etcCost = v('etcCost');
 
-  const avgPrice = price2x * ratio2x + price3x * (1 - ratio2x);
+  // 고정값
+  const existMembers = 37;
+  const rent = 165;
+  const mgmt = 20;
+  const instrTimesPerWeek = 14; // 월~금 3타임 - 금1타임(본인) = 14타임/주
+  const instrBase = instrTimesPerWeek * 4.3 * instrFee;
+  const fixedCost = rent + mgmt + instrBase + etcCost;
 
-  // 기존회원: 잔여횟수 소진 중 = 매출 0 (수업은 제공해야 함)
-  // 소진 후: 재등록율만큼 유료 전환
-  const paidExistMembers = 0; // 현재 시점(1개월차)은 소진 중
-  const paidNewMembers = newMembers;
-  const totalPaying = paidNewMembers; // 즉시 매출 가능한 회원
-  const afterBurnPaying = Math.round(existMembers * retentionRate) + newMembers * burnMonths; // 소진 후
+  // 핵심: 매출은 신규에서만
+  // 정상화 후(소진 완료): 재등록 회원 + 누적 신규
+  const reRegister = Math.round(existMembers * retention);
+  const steadyNew = newPerMonth * burnMonths; // 소진 기간 동안 모은 신규
+  const steadyTotal = reRegister + steadyNew;
+  const steadyRevenue = steadyTotal * price;
+  const steadyProfit = steadyRevenue - fixedCost;
 
-  // "정상화 후" 기준으로 BEP 계산
-  const revenue = afterBurnPaying * avgPrice;
+  // BEP: 몇 명의 유료회원이 있어야 흑자?
+  const bepMembers = Math.ceil(fixedCost / price);
 
-  // 강사비: 월~목 오전1+오후2 = 3타임/일 × 4일 = 12타임/주, 금 오전1+오후2(강사) = 2타임 → 주 14타임
-  // 금요일: 본인 수업이므로 강사는 오전1+오후1? 문맥상 금요일 본인수업 = 일부 타임
-  // 재해석: 월~금 오전1 오후2 = 3타임/일 × 5일 = 15타임/주, 금요일 본인수업 → 강사 14타임/주
-  // 토요일 2타임 본인 → 강사 0
-  const instructorTimesPerWeek = 14;
-  const instructorCostBase = instructorTimesPerWeek * 4.3 * instructorFee; // 월 환산
-  const incentiveCost = revenue * incentiveRate;
-  const totalInstructorCost = instructorCostBase + incentiveCost;
+  // 소진 기간 중 적자 (매출 = 신규만)
+  const burnLossTotal = Array.from({length: burnMonths}, (_, i) => {
+    const mNew = newPerMonth * (i + 1);
+    return mNew * price - fixedCost;
+  }).reduce((a, b) => a + b, 0);
 
-  const fixedCost = rent + mgmt + etc;
-  const totalCost = fixedCost + totalInstructorCost;
-  const profit = revenue - totalCost;
-
-  // 권리금 회수
-  const initialInvestment = 1000; // 권리금만 (보증금은 회수 가능)
-  const monthsToRecover = profit > 0 ? Math.ceil(initialInvestment / profit) : Infinity;
-
-  // BEP 회원수 계산
-  // revenue = members * avgPrice
-  // cost = fixedCost + instructorCostBase + revenue * incentiveRate
-  // BEP: members * avgPrice = fixedCost + instructorCostBase + members * avgPrice * incentiveRate
-  // members * avgPrice * (1 - incentiveRate) = fixedCost + instructorCostBase
-  const bepMembers = Math.ceil((fixedCost + instructorCostBase) / (avgPrice * (1 - incentiveRate)));
-  const additionalNeeded = Math.max(0, bepMembers - existMembers);
-
-  // KPI Cards
-  document.getElementById('kpiCards').innerHTML = `
-    <div class="card"><div class="card-label">기존 회원 (재고)</div><div class="card-value warn">${existMembers}명</div><div style="font-size:0.7rem;color:#94a3b8">잔여횟수 소진 중</div></div>
-    <div class="card"><div class="card-label">정상화 후 유료회원</div><div class="card-value neutral">${afterBurnPaying}명</div><div style="font-size:0.7rem;color:#94a3b8">재등록 ${Math.round(existMembers*retentionRate)}+신규 ${newMembers*burnMonths}</div></div>
-    <div class="card"><div class="card-label">정상화 후 월매출</div><div class="card-value neutral">${revenue.toFixed(0)}만원</div></div>
-    <div class="card"><div class="card-label">월 비용</div><div class="card-value warn">${totalCost.toFixed(0)}만원</div></div>
-    <div class="card"><div class="card-label">정상화 후 순이익</div><div class="card-value ${profit >= 0 ? 'positive' : 'negative'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만원</div></div>
-    <div class="card"><div class="card-label">BEP 유료회원수</div><div class="card-value warn">${bepMembers}명</div></div>
+  // KPI
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-label">월 고정비용</div><div class="kpi-value red">${fixedCost.toFixed(0)}만</div><div class="kpi-sub">월세165+관리20+강사${instrBase.toFixed(0)}+기타${etcCost}</div></div>
+    <div class="kpi"><div class="kpi-label">BEP 유료회원</div><div class="kpi-value blue">${bepMembers}명</div><div class="kpi-sub">월 ${price}만원 × ${bepMembers}명 = 비용 커버</div></div>
+    <div class="kpi"><div class="kpi-label">정상화 후 순익</div><div class="kpi-value ${steadyProfit >= 0 ? 'green' : 'red'}">${steadyProfit >= 0 ? '+' : ''}${steadyProfit.toFixed(0)}만</div><div class="kpi-sub">유료 ${steadyTotal}명 (재등록${reRegister}+신규${steadyNew})</div></div>
+    <div class="kpi"><div class="kpi-label">소진기간 누적적자</div><div class="kpi-value orange">${Math.abs(burnLossTotal).toFixed(0)}만</div><div class="kpi-sub">${burnMonths}개월간 기존회원 매출 0</div></div>
   `;
 
-  // P&L Table
-  document.querySelector('#plTable tbody').innerHTML = `
-    <tr><td colspan="2" style="color:#fbbf24;font-size:0.75rem">⚠️ 정상화 후 기준 (잔여횟수 ${burnMonths}개월 소진 후)</td></tr>
-    <tr><td>매출 (${afterBurnPaying}명 × ${avgPrice.toFixed(0)}만)</td><td class="positive">+${revenue.toFixed(0)}만</td></tr>
-    <tr><td>─ 월세</td><td class="negative">-${rent}만</td></tr>
-    <tr><td>─ 관리비</td><td class="negative">-${mgmt}만</td></tr>
-    <tr><td>─ 강사비 (기본 ${instructorTimesPerWeek}타임/주)</td><td class="negative">-${instructorCostBase.toFixed(0)}만</td></tr>
-    <tr><td>─ 강사 인센티브 (${(incentiveRate*100).toFixed(0)}%)</td><td class="negative">-${incentiveCost.toFixed(0)}만</td></tr>
-    <tr><td>─ 기타 (소모품/마케팅 등)</td><td class="negative">-${etc}만</td></tr>
-    <tr style="border-top:2px solid #475569;font-weight:700"><td>순이익</td><td class="${profit >= 0 ? 'positive' : 'negative'}">${profit >= 0 ? '+' : ''}${profit.toFixed(0)}만</td></tr>
+  // Alert
+  document.getElementById('alertBox').innerHTML = `⚠️ <strong>기존 ${existMembers}명은 비용입니다.</strong> 잔여횟수 소화 의무만 있고 매출 없음. 인수 전 반드시 회원별 잔여횟수 확인 필요.`;
+
+  // P&L
+  document.getElementById('plTable').innerHTML = `
+    <tr><th>항목</th><th>금액</th></tr>
+    <tr><td>매출 (유료 ${steadyTotal}명 × ${price}만)</td><td class="green">+${steadyRevenue.toFixed(0)}만</td></tr>
+    <tr><td>월세</td><td class="red">-${rent}만</td></tr>
+    <tr><td>관리비</td><td class="red">-${mgmt}만</td></tr>
+    <tr><td>강사비 (${instrTimesPerWeek}타임/주)</td><td class="red">-${instrBase.toFixed(0)}만</td></tr>
+    <tr><td>기타</td><td class="red">-${etcCost}만</td></tr>
+    <tr style="border-top:2px solid #dee2e6"><td><strong>순이익</strong></td><td class="${steadyProfit >= 0 ? 'green' : 'red'}"><strong>${steadyProfit >= 0 ? '+' : ''}${steadyProfit.toFixed(0)}만</strong></td></tr>
   `;
 
-  // Bar Chart - 회원수별 손익
+  // Bar chart - 신규 회원수별
+  const steps = [5, 10, 15, 20, 25, 30, 35, 40];
+  const maxVal = Math.max(...steps.map(n => Math.abs(n * price - fixedCost)));
   let bars = '';
-  const steps = [20, 30, 37, 40, 50, 60, 70, 80];
-  const maxAbs = Math.max(...steps.map(m => Math.abs(m * avgPrice * (1 - incentiveRate) - fixedCost - instructorCostBase)));
-  steps.forEach(m => {
-    const p = m * avgPrice * (1 - incentiveRate) - fixedCost - instructorCostBase;
-    const h = Math.max(5, Math.abs(p) / maxAbs * 100);
-    const cls = p >= 0 ? 'profit' : 'loss';
-    bars += `<div class="bar ${cls}" style="height:${h}px"><span class="bar-value">${p >= 0 ? '+' : ''}${p.toFixed(0)}</span><span class="bar-label">${m}명</span></div>`;
+  steps.forEach(n => {
+    const p = n * price - fixedCost;
+    const h = Math.max(3, Math.abs(p) / maxVal * 110);
+    bars += `<div class="bar-item"><div class="bar-num ${p >= 0 ? 'green' : 'red'}">${p >= 0 ? '+' : ''}${p.toFixed(0)}</div><div class="bar-fill ${p >= 0 ? 'pos' : 'neg'}" style="height:${h}px"></div><div class="bar-lbl">${n}명</div></div>`;
   });
   document.getElementById('barChart').innerHTML = bars;
 
-  // BEP Analysis
-  document.getElementById('bepAnalysis').innerHTML = `
-    <div class="bep-indicator"><span class="dot" style="background:${additionalNeeded > 0 ? '#fbbf24' : '#4ade80'}"></span>
-      손익분기점: <strong>${bepMembers}명</strong> | 현재: ${existMembers}명 → 
-      <span class="${additionalNeeded > 0 ? 'tag tag-yellow' : 'tag tag-green'}">${additionalNeeded > 0 ? additionalNeeded + '명 추가 필요' : 'BEP 달성!'}</span>
-    </div>
-    <div class="highlight-box" style="margin-top:12px">
-      <p>• 평균 회원 단가: <strong>${avgPrice.toFixed(0)}만원/월</strong> (주2회 ${price2x}만 ${(ratio2x*100).toFixed(0)}% + 주3회 ${price3x}만 ${((1-ratio2x)*100).toFixed(0)}%)</p>
-      <p>• 고정비: <strong>${(fixedCost + instructorCostBase).toFixed(0)}만원/월</strong> (월세+관리비+강사기본+기타)</p>
-      <p>• 회원 1명당 공헌이익: <strong>${(avgPrice * (1 - incentiveRate)).toFixed(1)}만원</strong> (인센 차감 후)</p>
-      <p>• BEP 도달 시 월 순이익: <strong>0원</strong> → 이후 회원 1명 추가 시 +${(avgPrice * (1 - incentiveRate)).toFixed(1)}만원</p>
-    </div>
-  `;
-
-  // ROI Timeline - 잔여횟수 소진 기간 반영
-  const months = [];
-  let cumProfit = 0;
+  // Timeline
+  let tl = '';
+  let cum = 0;
   for (let i = 1; i <= 12; i++) {
-    let mPaying;
+    let paying;
     if (i <= burnMonths) {
-      // 소진 기간: 기존회원 매출 0, 신규만
-      mPaying = newMembers * i;
+      paying = newPerMonth * i; // 소진 중: 신규만
     } else {
-      // 소진 후: 재등록 회원 + 누적 신규
-      mPaying = Math.round(existMembers * retentionRate) + newMembers * i;
+      paying = reRegister + newPerMonth * i; // 소진 후: 재등록 + 누적신규
     }
-    const mRev = mPaying * avgPrice;
-    const mCost = fixedCost + instructorCostBase + mRev * incentiveRate;
-    const mProfit = mRev - mCost;
-    cumProfit += mProfit;
-    months.push({ month: i, paying: mPaying, profit: mProfit, cum: cumProfit, burning: i <= burnMonths });
+    const mProfit = paying * price - fixedCost;
+    cum += mProfit;
+    const cls = mProfit >= 0 ? 'profit' : 'loss';
+    tl += `<div class="tl-item ${cls}"><div class="tl-month">${i}월차</div><div class="tl-val ${mProfit >= 0 ? 'green' : 'red'}">${mProfit >= 0 ? '+' : ''}${mProfit.toFixed(0)}</div><div class="tl-tag">${i <= burnMonths ? '소진중' : paying + '명'}</div></div>`;
   }
-  let timeline = '<div class="timeline">';
-  months.slice(0, 8).forEach(m => {
-    const recovered = m.cum >= initialInvestment;
-    const tag = m.burning ? '<span class="tag tag-red">잔여횟수 소진 중</span>' : recovered ? '<span class="tag tag-green">권리금 회수!</span>' : '';
-    timeline += `<div class="timeline-item ${recovered ? 'done' : ''}">
-      <strong>${m.month}개월차</strong> ${tag} - 유료 ${m.paying}명 | 월 순익 ${m.profit >= 0 ? '+' : ''}${m.profit.toFixed(0)}만 | 누적 ${m.cum >= 0 ? '+' : ''}${m.cum.toFixed(0)}만
-    </div>`;
-  });
-  timeline += '</div>';
-  if (newMembers === 0) {
-    timeline += `<p style="margin-top:12px;color:#94a3b8;font-size:0.8rem">※ 신규 회원수를 입력하면 월별 성장 시뮬레이션이 반영됩니다</p>`;
-  }
-  document.getElementById('roiTimeline').innerHTML = timeline;
+  document.getElementById('timeline').innerHTML = tl;
 
   // Insights
-  const insights = [];
-  const burnLoss = burnMonths * (fixedCost + instructorCostBase);
-  insights.push(`🚨 <strong>확인 필수</strong>: 기존 37명 잔여횟수 파악 → 소진 기간 ${burnMonths}개월 동안 매출 없이 비용 ${burnLoss.toFixed(0)}만원 발생 (신규 없을 시)`);
-  insights.push(`📋 인수 전 체크: ① 회원별 잔여횟수 리스트 ② 평균 남은 횟수 ③ 만료 예정 회원 수 → 이걸로 소진 기간 정확히 산출`);
-  if (profit < 0) {
-    insights.push(`⚠️ 정상화 후에도 월 <strong>${Math.abs(profit).toFixed(0)}만원 적자</strong>. 재등록율 ${(retentionRate*100).toFixed(0)}% + 월 신규 ${newMembers}명으로는 부족합니다.`);
-  }
-  insights.push(`🎯 재등록율이 핵심: 37명 중 ${Math.round(existMembers*retentionRate)}명 재등록 가정. 실제로 70% 달성 시 유료 ${Math.round(existMembers*0.7) + newMembers*burnMonths}명`);
-  insights.push(`💡 BEP ${bepMembers}명 도달 전략: 재등록 ${Math.round(existMembers*retentionRate)}명 + 월 ${Math.ceil((bepMembers - Math.round(existMembers*retentionRate)) / burnMonths)}명 신규 모집 필요`);
-
-  document.getElementById('insights').innerHTML = insights.map(i => `<div class="highlight-box" style="margin-bottom:8px"><p>${i}</p></div>`).join('');
+  const monthsToBep = (() => {
+    for (let i = 1; i <= 24; i++) {
+      const p = i <= burnMonths ? newPerMonth * i : reRegister + newPerMonth * i;
+      if (p >= bepMembers) return i;
+    }
+    return '24+';
+  })();
+  document.getElementById('insights').innerHTML = `
+    <div class="insight">📌 <strong>BEP ${bepMembers}명</strong>까지 월 ${newPerMonth}명 모집 시 <strong>${monthsToBep}개월차</strong>에 흑자 전환</div>
+    <div class="insight">💰 초기 투자: 권리금 1,000만 + 소진기간 적자 ${Math.abs(burnLossTotal).toFixed(0)}만 = <strong>실질 투자 ${(1000 + Math.abs(burnLossTotal)).toFixed(0)}만원</strong></div>
+    <div class="insight">🔑 인수 전 확인: ① 회원별 잔여횟수 ② 만료 임박 회원 수 ③ 재등록 의향 → 소진기간 & 재등록율 정확도 ↑</div>
+    <div class="insight">💡 재등록율 ${(retention*100).toFixed(0)}% 가정 → 37명 중 <strong>${reRegister}명만 재결제</strong>. 나머지 ${existMembers - reRegister}명은 이탈 예상</div>
+  `;
 }
-
-// 이벤트 바인딩
 document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
 calc();
 </script>
